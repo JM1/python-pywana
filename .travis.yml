@@ -1,0 +1,48 @@
+dist: xenial
+# we must use xenial because 
+# (a) python3-gi in trusty is python 3.4 only but we need 3.5 for e.g. type hints and 
+#     we must use system site package because python3-gi cannot be installed via pip
+# (b) we cannot use python3-dbus from system site packages because it is python 3.4 only,
+#     but also cannot install dbus-python via pip because dbus-python requires 'dbus-1 >= 1.8' 
+#     but version of dbus in trusty (libdbus-1-dev) is 1.6.18 only
+
+notifications:
+  email: false
+
+language: python
+
+# only python 3.5 is supported because we depend on system site package
+# python3-gi which is python 3.5 only, the default python 3 in xenial.
+python:
+  - '3.5'
+
+branches:
+  only: master
+
+# python3-gi can be installed via apt only (not via pip) and thus we be able to use system site packages
+virtualenv:
+  system_site_packages: true
+
+addons:
+  apt:
+   packages:
+   - python3-gi
+   - python3-dbus
+   - python3-psutil
+
+install:
+  - python setup.py install --record installed-files.txt
+
+script:
+  - wana --help
+
+deploy:
+  provider: pypi
+  user: JM1
+  password:
+    secure: dPHXrYuYMWNKPb/0Bn3ks4GDgqvf4DqdLIxZfyvai+ke92w0ju1BUc9VGqufwSPCFH7yHOEwx4jM/JcGi2bcixNoBC4zdiEZaedBEMcJGq42CCywUBWwOlpkJy7KK8yXX8qK8DC51D1MuZ3nymQnKl8JNoNCJyLN8q/3SqmrjlhTI8CsAMke2S9KNKfPTp2elgt3cNu82wASsf48Cr4uEccrCeBM33547NOMyMXxc5gaVTaTHGarsCW8hVkutfGKm2qGB+U1tSEXlG3M76XvfOjVz7mdRYIeAeZj2Qg32jNFb8m5RtgYOTbot4t/ZvsV8v0nEC4c0FSS9b6my/3CI9oMn16lUwlGB4FiHwUnnwEZe8kHWE10QV+RwtwcHyMXa/i1j6/pbXILT/JWVUaxXnKIODJ/0SS4Ny/rX6nxCf8govjfAfG0vK/bVRF3rb0qDuMXrTRc1JiHD0lL0IMXRE/DIYBTupTm2gc8wjkN+Xsq+iI063W9vGC2ev4rkogh+OnKBy2+6Bde/B9PPtK+/eer+t3dLMulrrbuo1pg0WW+bBXWleC7oKKtW28WH/VMyEUNxq9wzh3Lgu4+f89oAmrhv4lMwS+o9RCK9DVTgkkpxY+eC6DcUMNqRYtUS5jiBGkA7QceiPD7Wu7TewdejDjuKgJ1p5T3FGFBt70WhGg=
+  distributions: sdist bdist_wheel
+  on:
+    tags: true
+    python: 3.5
+    branch: production
