@@ -48,7 +48,7 @@ sudo apt-get install python3-gi python3-dbus python3-psutil
 python3 setup.py build_all
 
 # Sign distributions
-gpg --detach-sign --armor dist/*
+find dist/ -type f -exec gpg --detach-sign --armor '{}' \;
 
 # Upload to Test PyPI
 twine upload --repository-url https://test.pypi.org/legacy/ dist/*
