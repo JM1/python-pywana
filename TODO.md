@@ -14,3 +14,4 @@
     script:
       - pytest
     ```
+* Add usage notes to README
